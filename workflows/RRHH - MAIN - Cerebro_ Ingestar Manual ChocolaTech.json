@@ -1,5 +1,5 @@
 {
-  "name": "RRHH - SUB - Cerebro: Ingestar Manual ChocolaTech",
+  "name": "RRHH - MAIN - Cerebro: Ingestar Manual ChocolaTech",
   "nodes": [
     {
       "parameters": {},
@@ -14,7 +14,7 @@
     },
     {
       "parameters": {
-        "url": "https://raw.githubusercontent.com/ericmonne/chocolatech-inmersion-g10/refs/heads/main/Manual%20de%20RH%20ChocolaTech%20LAD.txt",
+        "url": "https://raw.githubusercontent.com/azocarone/chatbot-rrhh/refs/heads/main/assets/chocolatech/Manual%20de%20RH%20ChocolaTech%20LAD.txt",
         "options": {
           "response": {
             "response": {
@@ -57,7 +57,7 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
       "typeVersion": 1,
       "position": [
-        456,
+        400,
         224
       ],
       "id": "37bd0ee3-c148-4f38-a44b-527085304856",
@@ -76,7 +76,7 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        584,
+        592,
         224
       ],
       "id": "a7025450-1c96-48bb-adc7-e5378675eaeb",
@@ -135,7 +135,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "f1fbb0fd-8f56-47b8-97fb-82d57a7c4f40",
+  "versionId": "5b18c0e2-b73e-441a-85c2-ebf2eaf83892",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "14c5cd6414cd5fa87fcb1349c664d436ae445b0862d1e5b9d174da176e2d39ad"
