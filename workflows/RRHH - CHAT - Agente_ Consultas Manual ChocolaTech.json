@@ -1,59 +1,27 @@
 {
-  "name": "RRHH - CHAT - Agente: Consultas Manual ChocolaTech",
   "nodes": [
     {
       "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.4,
-      "position": [
-        -16,
-        0
-      ],
-      "id": "0b9f0913-265e-4588-9317-38be2371e127",
-      "name": "When chat message received",
-      "webhookId": "01cfb7a3-0f3b-4285-92ba-b2c0d13c7ae9"
-    },
-    {
-      "parameters": {
+        "promptType": "define",
+        "text": "={{ $node[\"Chat Message\"].json[\"chatInput\"] }}",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        272,
-        0
+        176,
+        -112
       ],
       "id": "69ab12dd-eb48-4ce5-9e98-294ad56d8204",
       "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
-      "typeVersion": 1,
-      "position": [
-        208,
-        224
-      ],
-      "id": "0743fc9d-cd26-40ba-bfef-f7b0eb1c785c",
-      "name": "Cohere Chat Model",
-      "credentials": {
-        "cohereApi": {
-          "id": "6UHgg0NGwxKcecoh",
-          "name": "Cohere account"
-        }
-      }
     },
     {
       "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.4,
       "position": [
-        336,
-        224
+        240,
+        112
       ],
       "id": "23109852-1e23-4597-8b6b-3e51701acc28",
       "name": "Simple Memory"
@@ -61,7 +29,7 @@
     {
       "parameters": {
         "mode": "retrieve-as-tool",
-        "toolDescription": "Buscar informaciones sobre RH, asuntos como: vacaciones, horarios, etc.",
+        "toolDescription": "Buscar informaciones sobre RR.HH., asuntos como: vacaciones, horarios, etc.",
         "memoryKey": {
           "__rl": true,
           "mode": "list",
@@ -71,8 +39,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
       "typeVersion": 1.3,
       "position": [
-        464,
-        224
+        432,
+        112
       ],
       "id": "e8ae644e-b020-4543-9300-9fb746d74e4d",
       "name": "Simple Vector Store"
@@ -84,8 +52,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
       "typeVersion": 1,
       "position": [
-        544,
-        432
+        432,
+        320
       ],
       "id": "a38a1d57-37fc-4acb-80ad-9861a6c5f961",
       "name": "Embeddings Cohere",
@@ -95,30 +63,135 @@
           "name": "Cohere account"
         }
       }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        464
+      ],
+      "id": "36a822b4-e4fd-4d62-8e1e-b68a0cef882d",
+      "name": "Cohere Chat Model1",
+      "credentials": {
+        "cohereApi": {
+          "id": "6UHgg0NGwxKcecoh",
+          "name": "Cohere account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Clasifica la siguiente consulta del usuario. Si la consulta tiene que ver con Recursos Humanos, trabajo, vacaciones, nómina, reglamentos, contratos o temas corporativos de una empresa, responde ÚNICAMENTE con la palabra: VALIDO.\n\nSi la consulta es de cultura general, programación, matemáticas, ocio, tareas personales o cualquier tema ajeno a Recursos Humanos, responde ÚNICAMENTE con la palabra: INVALIDO.\n\nRegla estricta: No agregues saludos, explicaciones ni signos de puntuación. Tu respuesta debe ser exactamente una de las dos palabras: VALIDO o INVALIDO.\n\nConsulta del usuario: {{ $json.chatInput }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -1328,
+        240
+      ],
+      "id": "e5d3fc8a-257b-4483-9695-b35314cc3432",
+      "name": "Classify"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "79a4c0ff-d7de-4afd-9ea6-60d591754e24",
+              "leftValue": "={{ $json.text.toUpperCase().trim() }}",
+              "rightValue": "=VALIDO",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -976,
+        240
+      ],
+      "id": "1061db02-d56b-4914-a5c5-22622a823c84",
+      "name": "Route"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"text\": \"Lo siento, como asistente de Recursos Humanos de ChocolaTech solo puedo responder consultas relacionadas con esta área. ¿Tienes alguna duda sobre nuestro manual del empleado, vacaciones o políticas internas?\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -784,
+        448
+      ],
+      "id": "88fd51fe-92f6-43bb-a866-ba3eb0909482",
+      "name": "Final Chat Message"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1552,
+        240
+      ],
+      "id": "0b9f0913-265e-4588-9317-38be2371e127",
+      "name": "Chat Message",
+      "webhookId": "01cfb7a3-0f3b-4285-92ba-b2c0d13c7ae9"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        16,
+        112
+      ],
+      "id": "0743fc9d-cd26-40ba-bfef-f7b0eb1c785c",
+      "name": "Cohere Chat Model2",
+      "credentials": {
+        "cohereApi": {
+          "id": "6UHgg0NGwxKcecoh",
+          "name": "Cohere account"
+        }
+      }
     }
   ],
-  "pinData": {},
   "connections": {
-    "When chat message received": {
+    "AI Agent": {
       "main": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Cohere Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Simple Memory": {
@@ -153,18 +226,73 @@
           }
         ]
       ]
+    },
+    "Cohere Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify": {
+      "main": [
+        [
+          {
+            "node": "Route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Final Chat Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Message": {
+      "main": [
+        [
+          {
+            "node": "Classify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohere Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate"
-  },
-  "versionId": "1d50805c-d47c-412b-84cd-12a14b122772",
+  "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "14c5cd6414cd5fa87fcb1349c664d436ae445b0862d1e5b9d174da176e2d39ad"
-  },
-  "id": "2dbnOTAGeWEdIX2S",
-  "tags": []
+  }
 }
