@@ -4,7 +4,9 @@
       "parameters": {
         "promptType": "define",
         "text": "={{ $node[\"Chat Message\"].json[\"chatInput\"] }}",
-        "options": {}
+        "options": {
+          "systemMessage": "INSTRUCCIÓN ULTRA ESTRICTA DE EJECUCIÓN:\nEres un asistente de RR.HH. Si el usuario te pide consultar datos personales como sus vacaciones, saldo o banco de horas, debes usar la herramienta de MySQL.\n\nAl momento de llamar a la herramienta, el campo \"query\" DEBE contener única y exclusivamente el Nombre Completo del usuario y su Email, separados obligatoriamente por una coma. No envíes objetos JSON, no envíes IDs y no añadas ninguna otra palabra.\n\nEjemplo de lo que debes escribir en el campo de texto de la herramienta:\nJosé Azócar, azocarone@freelance.com"
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
@@ -13,15 +15,16 @@
         -112
       ],
       "id": "69ab12dd-eb48-4ce5-9e98-294ad56d8204",
-      "name": "AI Agent"
+      "name": "AI Agent",
+      "alwaysOutputData": false
     },
     {
       "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.4,
       "position": [
-        240,
-        112
+        80,
+        176
       ],
       "id": "23109852-1e23-4597-8b6b-3e51701acc28",
       "name": "Simple Memory"
@@ -39,8 +42,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
       "typeVersion": 1.3,
       "position": [
-        432,
-        112
+        240,
+        176
       ],
       "id": "e8ae644e-b020-4543-9300-9fb746d74e4d",
       "name": "Simple Vector Store"
@@ -52,8 +55,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
       "typeVersion": 1,
       "position": [
-        432,
-        320
+        240,
+        384
       ],
       "id": "a38a1d57-37fc-4acb-80ad-9861a6c5f961",
       "name": "Embeddings Cohere",
@@ -71,8 +74,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
       "typeVersion": 1,
       "position": [
-        -1264,
-        464
+        -944,
+        -208
       ],
       "id": "36a822b4-e4fd-4d62-8e1e-b68a0cef882d",
       "name": "Cohere Chat Model1",
@@ -97,8 +100,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -1328,
-        240
+        -1008,
+        -432
       ],
       "id": "e5d3fc8a-257b-4483-9695-b35314cc3432",
       "name": "Classify"
@@ -131,8 +134,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -976,
-        240
+        -656,
+        -432
       ],
       "id": "1061db02-d56b-4914-a5c5-22622a823c84",
       "name": "Route"
@@ -146,8 +149,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -784,
-        448
+        -464,
+        -224
       ],
       "id": "88fd51fe-92f6-43bb-a866-ba3eb0909482",
       "name": "Final Chat Message"
@@ -161,8 +164,8 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.4,
       "position": [
-        -1552,
-        240
+        -1232,
+        -432
       ],
       "id": "0b9f0913-265e-4588-9317-38be2371e127",
       "name": "Chat Message",
@@ -175,8 +178,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
       "typeVersion": 1,
       "position": [
-        16,
-        112
+        -128,
+        176
       ],
       "id": "0743fc9d-cd26-40ba-bfef-f7b0eb1c785c",
       "name": "Cohere Chat Model2",
@@ -184,6 +187,29 @@
         "cohereApi": {
           "id": "6UHgg0NGwxKcecoh",
           "name": "Cohere account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "UTILIZAR ÚNICAMENTE cuando un empleado pida consultar sus propios datos, saldo de vacaciones, saldo de horas o modalidad de trabajo. Requiere obligatoriamente que conozcas su Nombre y Email.",
+        "operation": "executeQuery",
+        "query": "CALL sp_get_empleado_autenticado('{{ $json.input }}');",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySqlTool",
+      "typeVersion": 2.5,
+      "position": [
+        592,
+        176
+      ],
+      "id": "5a50ebf5-8fb9-4b9c-8330-949f78021fd5",
+      "name": "Execute a SQL query in MySQL",
+      "credentials": {
+        "mySql": {
+          "id": "IblhBiHtxw5BFvsd",
+          "name": "MySQL account"
         }
       }
     }
@@ -284,6 +310,17 @@
           {
             "node": "AI Agent",
             "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query in MySQL": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
