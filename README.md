@@ -129,5 +129,48 @@ Para un flujo que toma un documento y lo procesa envía a la memoria (base de da
 
 Para dominar los **AI Agents en n8n**, el secreto está en entender que no funcionan como un nodo tradicional de "acción". Por lo tanto, se desglosarán los conceptos clave y cómo se relacionan entre sí dentro de la interfaz:
 
+### 1. El Cerebro del Flujo: El Nodo AI Agent
 
+A diferencia de los nodos estándar, el nodo **AI Agent** en n8n actúa como un director de orquesta. En lugar de ejecutar una sola tarea lineal, se le proporciona un objetivo, un contexto y herramientas, y el agente decide cómo resolver el problema.
 
+Para que este nodo funcione, requiere obligatoriamente estar conectado a otros sub-nodos (inputs) que definen su comportamiento.
+
+### 2. Los 4 Pilares de un Agente en n8n
+
+Para que un agente tenga sentido y no sea solo un chat vacío, n8n utiliza una arquitectura modular. Se debe imaginar que el nodo del agente tiene ranuras (slots) donde se le conectan cuatro componentes esenciales:
+
+#### a. El Modelo de Lenguaje (Model)
+
+Es el motor de inteligencia. n8n permite conectar proveedores como OpenAI, Anthropic, Mistral o Cohere, etc.
+
+**Relación en el workflow**: El agente le envía el prompt y los datos al modelo para que este "piense" y genere la respuesta o decida qué herramienta usar.
+
+#### b. La Memoria (Memory)
+
+Por defecto, los LLMs no tienen memoria; cada mensaje es un lienzo en blanco. Si se está armando un bot de atención a cliente, se necesita que recuerde lo que el usuario dijo hace tres líneas.
+
+**Relación en el workflow**: Conectar nodos como _Window Buffer Memory_ o memorias basadas en bases de datos (Redis, Chat Trigger Memory). Esto permite que el agente arrastre el historial de la conversación en cada iteración.
+
+#### c. Las Herramientas (Tools)
+
+Aquí es donde ocurre la magia de la automatización. Un LLM por sí solo solo sabe hablar. Las Tools le dan superpoderes para actuar en el mundo real.
+
+**Relación en el workflow**: Se pueden conectar herramientas preconfiguradas (como buscar en Google, leer un Notion) o, lo mejor de todo, el nodo Workflow Tool. Este último te permite convertir cualquier otro flujo de n8n en una herramienta que el agente puede ejecutar cuando lo considere necesario (por ejemplo, registrar un usuario en una base de datos o verificar un email).
+
+#### d. La Recuperación de Información (Information Retrieval / Vector Store)
+
+Si se quiere que un agente responda preguntas sobre los manuales de tu empresa, políticas de Recursos Humanos o documentos específicos, no puede meter todo ese texto en el prompt porque saturaría el contexto.
+
+**Relación en el workflow**: Se conectan nodos de Vector Store (como Pinecone, Qdrant o Supabase) junto con un Embeddings Content Retriever. El agente busca en esta base de datos el fragmento exacto de información que necesita para responder la pregunta del usuario.
+
+#### 3. ¿Cómo interactúa el Agente con el resto de n8n?
+
+El flujo de ejecución de un agente no es lineal, es cíclico (lo que en IA, se llama el bucle _Reasoning and Acting o ReAct_).
+
+**Entrada**: Llega un trigger (por ejemplo, un webhook de WhatsApp o un chat en vivo).
+
+**Evaluación**: El agente recibe el mensaje, consulta la Memoria para entender el contexto y le pregunta al Model: "¿Qué debo hacer para responder a esto?".
+
+**Acción (Uso de Herramientas)**: Si el usuario pide "Verifica si mi correo está registrado", el agente detecta que tiene una Tool llamada `validar_email`. Detiene su respuesta, ejecuta la herramienta, va a la base de datos de n8n y regresa con el resultado.
+
+**Respuesta Final**: El modelo procesa el resultado de la herramienta y genera la respuesta final que sale del nodo del agente hacia el usuario.
