@@ -1,0 +1,538 @@
+{
+  "name": "RRHH - MAIN - Agent: Chatbot ChocolaTech",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatCohere",
+      "typeVersion": 1,
+      "position": [
+        -1536,
+        -208
+      ],
+      "id": "36a822b4-e4fd-4d62-8e1e-b68a0cef882d",
+      "name": "Cohere Chat Model1",
+      "notesInFlow": false,
+      "credentials": {
+        "cohereApi": {
+          "id": "6UHgg0NGwxKcecoh",
+          "name": "Cohere account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Eres el clasificador y enrutador inteligente para el chatbot de RR.HH. de la empresa ChocolaTech.\n\nTu única función es analizar el mensaje enviado por el usuario, evaluar las reglas de negocio y determinar el destino correcto del flujo de atención. Debes responder exclusivamente con un objeto JSON estructurado, sin texto adicional, saludos ni bloques de código Markdown.\n\n## REGLA UNIFICADA DE CLASIFICACIÓN Y DIRECCIONAMIENTO\n\nPropósito: Evaluar la temática, el nivel de privacidad (identidad) y la complejidad de la consulta para determinar el camino que debe seguir el usuario.\n\nEl modelo debe analizar el mensaje y clasificarlo en uno de los siguientes 4 destinos lógicos (destino_flujo):\n\n1. destino_flujo: \"SALUDAR\" (Cortesía pura)\n\n- Criterio: El usuario solo saluda o se despide (ej. \"Hola\", \"Buenas tardes\"). No hay consulta de fondo.\n- Identidad: NO se requiere.\n- Resultado: Envía al flujo de respuesta de cortesía.\n\n2. destino_flujo: \"RECHAZAR_TEMA\" (Tema ajeno)\n\n- Criterio: La consulta es ajena a la empresa o a RR.HH. (ej. deportes, cocina, soporte técnico de TI).\n- Identidad: NO se requiere.\n- Resultado: Envía al flujo de rechazo por tema no soportado.\n\n3. destino_flujo: \"PEDIR_IDENTIDAD\" (Falta información personal)\n\n- Criterio: El usuario hace una consulta personal/privada (ej. \"¿Cuánto me pagaron?\", \"¿Cuántos días de vacaciones me quedan?\"), pero NO proporciona su nombre completo, su correo corporativo, o le falta alguno de los dos en el mensaje actual.\n- Resultado: Envía al flujo que solicita los datos de identidad.\n\n4. destino_flujo: \"PROCESAR_RRHH\" (Consulta lista para responder)\n\n- Criterio: La consulta es válida para ser respondida. Cumple con uno de estos dos escenarios:\n  - Escenario A (General): Pregunta sobre políticas globales (ej. \"¿Cómo se calculan las vacaciones?\"). No requiere identidad.\n  - Escenario B (Privada con datos): Pregunta personal (ej. \"Mis vacaciones\") y SÍ incluye nombre y correo en el mensaje.\n\n- Evaluación de Especialista (Campo adicional requiere_especialista):\n  - Será true si la consulta implica conflictos o alta complejidad (ej. acoso, errores graves en pagos, disputas).\n  - Será false para preguntas frecuentes o solicitudes rutinarias."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -1504,
+        -432
+      ],
+      "id": "e5d3fc8a-257b-4483-9695-b35314cc3432",
+      "name": "Classify"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1728,
+        -432
+      ],
+      "id": "0b9f0913-265e-4588-9317-38be2371e127",
+      "name": "Chat Message",
+      "webhookId": "01cfb7a3-0f3b-4285-92ba-b2c0d13c7ae9"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"destino_flujo\": \"\",\n  \"requiere_especialista\": true,\n  \"razon\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1328,
+        -208
+      ],
+      "id": "64ac21f8-6f1a-45bd-8396-a1fb52cc1342",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "DYvkCiSDI8TORt9w",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/DYvkCiSDI8TORt9w",
+          "cachedResultName": "RRHH - SUB - Agent: Chatbot ChocolaTech"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sessionId": "={{ $json.sessionId }}",
+            "chatInput": "={{ $json.chatInput }}",
+            "output": "={{ $json.output }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "chatInput",
+              "displayName": "chatInput",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        -32
+      ],
+      "id": "ada61980-5be4-43d6-937b-9efd30abbcf3",
+      "name": "Call 'RRHH - SUB - Agent: Chatbot ChocolaTech'"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "459cb5ca-0f34-4121-a260-40f99c4934de",
+                    "leftValue": "={{ $json.output.destino_flujo }}",
+                    "rightValue": "SALUDAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Greet"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4bd52a35-28a5-4b6a-850c-7af24aa94011",
+                    "leftValue": "={{ $json.output.destino_flujo }}",
+                    "rightValue": "RECHAZAR_TEMA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reject Topic"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b1ea6d87-5b75-4c54-9249-71a83eb8da99",
+                    "leftValue": "={{ $json.output.destino_flujo }}",
+                    "rightValue": "PEDIR_IDENTIDAD",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Request Identity"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f4167931-71ec-48df-af98-78247d0ba607",
+                    "leftValue": "={{ $json.output.destino_flujo }}",
+                    "rightValue": "=PROCESAR_RRHH",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Process HR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1152,
+        -464
+      ],
+      "id": "14a11efb-2298-4557-80f5-38fb9f42f1af",
+      "name": "Routing",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2939aa36-b5c0-4fd2-b12d-8de76069d98c",
+              "name": "text",
+              "value": "=¡Hola! 👋 Qué gusto saludarte. Soy el asistente virtual de RR.HH. de ChocolaTech 🍫.\n\nEstoy aquí para ayudarte a resolver tus dudas al instante. Cuéntame, ¿qué deseas consultar hoy?:\n\n- 📅 Mis días de vacaciones\n- 📝 Dudas sobre mi contrato\n- 💵 Información de nómina\n- 📘 Políticas o reglamentos internos",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        -752
+      ],
+      "id": "219ccd98-e8ec-475e-802e-ece62233755e",
+      "name": "Greet"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2939aa36-b5c0-4fd2-b12d-8de76069d98c",
+              "name": "text",
+              "value": "=¡Ups! 🤖 Por ahora no tengo información sobre ese tema, ya que estoy especializado exclusivamente en el área de Recursos Humanos de ChocolaTech.\n\nPero no te preocupes, si tienes alguna duda sobre tus vacaciones, nómina, contratos o el reglamento interno, ¡escríbela aquí abajo y la revisamos de inmediato! 🚀",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        -544
+      ],
+      "id": "761b8a28-5d3b-444a-bbf4-b9b8749fa0a4",
+      "name": "Reject"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2939aa36-b5c0-4fd2-b12d-8de76069d98c",
+              "name": "text",
+              "value": "=¡Excelente consulta! 🔒 Por seguridad y para poder buscar tus datos privados en el sistema, necesito validar quién eres.\n\n(Nota del sistema: {{ $json.output.razon }})\n\nPor favor, ayúdame escribiendo en tu próximo mensaje:\n\n- 👤 Tu nombre completo\n- 📧 Tu correo corporativo\n\n¡En cuanto me los des, nos ponemos manos a la obra! 🛠️",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        -336
+      ],
+      "id": "7c2bb7e5-9a08-48ee-92ba-bde604f2b540",
+      "name": "Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c3830289-ce26-432d-b7ab-1aff9b6b0c12",
+              "leftValue": "={{ $json.output.requiere_especialista }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -832,
+        -128
+      ],
+      "id": "89d5be00-da5a-41e6-8bbd-20de397d0b44",
+      "name": "Requires Specialist"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2939aa36-b5c0-4fd2-b12d-8de76069d98c",
+              "name": "text",
+              "value": "=Comprendo perfectamente la situación. 🤝 Debido a la complejidad y la importancia de lo que me comentas, este caso requiere la atención personalizada de un especialista humano de nuestro equipo de RR.HH.\n\n(Detalle del caso: {{ $json.output.razon }})\n\n¿Qué pasará ahora?\n\n📥 He registrado los detalles de tu consulta prioritariamente. Por favor, ponte en contacto directo con el departamento o acércate a la oficina de RR.HH. para que un especialista tome tu caso de inmediato y te brinde la solución adecuada.\n\n¡Estamos aquí para apoyarte a resolverlo cuanto antes! 🚀",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -528,
+        -240
+      ],
+      "id": "3793bedf-7d39-47fa-a032-5a4e8412d40c",
+      "name": "Recommend Specialist"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6569458f-b09c-4a4a-8dbb-1c4f2e6996d1",
+              "name": "sessionId",
+              "value": "={{ $('Chat Message').item.json.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "5709844a-0cfc-4b96-867f-7c5b138f72b7",
+              "name": "chatInput",
+              "value": "={{ $('Chat Message').item.json.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "2d0f0aa1-6225-44c8-91e6-51bc9fad27e8",
+              "name": "output.razon",
+              "value": "={{ $json.output.razon }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -528,
+        -32
+      ],
+      "id": "9d27764d-9459-4335-8b50-203d6f277180",
+      "name": "Data Package"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cohere Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify": {
+      "main": [
+        [
+          {
+            "node": "Routing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Message": {
+      "main": [
+        [
+          {
+            "node": "Classify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Classify",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Routing": {
+      "main": [
+        [
+          {
+            "node": "Greet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Requires Specialist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Requires Specialist": {
+      "main": [
+        [
+          {
+            "node": "Recommend Specialist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Data Package",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recommend Specialist": {
+      "main": [
+        []
+      ]
+    },
+    "Data Package": {
+      "main": [
+        [
+          {
+            "node": "Call 'RRHH - SUB - Agent: Chatbot ChocolaTech'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "36fb8ed7-f842-4e62-82b1-b41ec546c21b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14c5cd6414cd5fa87fcb1349c664d436ae445b0862d1e5b9d174da176e2d39ad"
+  },
+  "id": "2dbnOTAGeWEdIX2S",
+  "tags": []
+}

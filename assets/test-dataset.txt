@@ -1,0 +1,15 @@
+:
+
+Me podrían decir si el día de la empresa se considera feriado no laborable en nuestro calendario.
+Cuál es el reglamento de la empresa respecto al código de vestimenta para los días viernes.
+Hola, soy Carlos Mendoza de finanzas. Me recuerdan cuál es el procedimiento oficial para solicitar un permiso de ausencia por paternidad.
+Hola, requiero ver mi última liquidación de sueldo. Mi nombre es Roberto Díaz y mi correo es r.diaz@chocolatech.com (ERROR EN SQL)
+Hola, requiero ver datos laborales. Mi nombre es José Azócar y mi correo es azocarone@freelance.com (ERROR EN SQL)
+
+:
+
+Hola, mi laptop de la oficina no enciende y necesito que me configuren la VPN de nuevo para poder trabajar.
+Hola bot, cuál es tu película favorita o qué me recomiendas hacer el fin de semana.
+Necesito que me revisen la nómina de este mes porque creo que me calcularon mal las horas extras.
+Hola, soy Mariana Gómez. Me podrías decir cuántos días de vacaciones me quedan disponibles para este año.
+Quiero ver mi contrato laboral actualizado, mi correo institucional es l.martinez@chocolatech.com.

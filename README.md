@@ -1,5 +1,12 @@
 # Chatbot de RR.HH
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![AI: Cohere](https://img.shields.io/badge/AI-Cohere-001F25?logo=cohere)](https://cohere.com/)
+[![GitHub: Profile](https://img.shields.io/badge/GitHub-Profile-181717?logo=github)](https://github.com/)
+[![Hosting: Railway](https://img.shields.io/badge/Hosting-Railway-131415?logo=railway)](https://railway.app/)
+[![Automation: n8n](https://img.shields.io/badge/Automation-n8n-EA4B68?logo=n8n)](https://n8n.io/)
+[![Telegram: Contact](https://img.shields.io/badge/Telegram-Contact-26A69A?logo=telegram)](https://t.me/)
+
 ## Tabla de Contenidos
 
 - [Automatización con n8n](#-automatización-con-n8n)
